@@ -3,7 +3,10 @@ bionic physical host
 
 The virtual maas setup is done using maas-one with some tweaks. First clone
 
+Create ssh key if needed:
+[ -f /home/ubuntu/.ssh/id_rsa ] || { ssh-keygen -f /home/ubuntu/.ssh/id_rsa -q -N ""; }
 
+Setup deployment directory:
 SCRIPT_DIR=$(mktemp -d --tmpdir=$HOME)
 chmod a+rx $SCRIPT_DIR
 cd $SCRIPT_DIR
@@ -12,7 +15,7 @@ git clone ironic-test-deploy
 
 Patch maas-one
 cd $SCRIPT_DIR/maas-one
-patch -p1 ../ironic-test-deploy/maas-one-ironic-patch.diff
+patch -p1 < ../ironic-test-deploy/maas-one-ironic-patch.diff
 
 Run install
 cd $SCRIPT_DIR/ironic-test-deploy/scripts
@@ -25,6 +28,16 @@ cd $SCRIPT_DIR/ironic-test-deploy/scripts
 ./create-ironic-net.sh
 
 Follow the instructions in  $SCRIPT_DIR/maas-one/README.md
+cd $SCRIPT_DIR/maas-one
+less README.md
+
+If the nodes do not appear in maas, try restarting them:
+$ virsh destroy node2
+Domain node2 destroyed
+
+$ virsh start node2
+Domain node2 started
+
 
 There should now be a juju model backed by the new maas
 
