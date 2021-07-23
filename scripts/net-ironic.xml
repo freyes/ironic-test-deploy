@@ -1,0 +1,8 @@
+<network>                                                                       
+  <name>ironic</name>                                                         
+  <uuid>790274ec-2590-4854-b432-ea7d22deb669</uuid>                             
+  <bridge name='virbr2' stp='on' delay='0'/>                                    
+  <mac address='52:54:00:c9:86:42'/>                                            
+  <ip address='10.10.0.1' netmask='255.255.255.0'>                               
+  </ip>                                                                         
+</network>
