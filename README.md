@@ -14,7 +14,7 @@ work equally well with a later Ubuntu release.
   advised to use commit d71a76da of [Maas One][maasone] until this is fixed.
 
 
-## Create SSH keys if needed.
+## Create SSH keys if needed
 
 If this is a freshly provisioned host generate an SSH key.
 
@@ -116,14 +116,14 @@ Create Ironic specific flavours
     cd $SCRIPT_DIR/ironic-test-deploy/scripts
     ./create-openstack-flavors.sh
 
-## Create keypair:
+## Create keypair
 
 Create a key pair.
 
     cd $SCRIPT_DIR/ironic-test-deploy/scripts
     ./create-openstack-key.sh
 
-## Create the 'physical' server that ironic will control:
+## Create the 'physical' server that ironic will control
 
 Create a virsh guest outside of OpenStack which Ironic will control. This guest
 will be mimicking a physical server.
@@ -131,7 +131,7 @@ will be mimicking a physical server.
     cd $SCRIPT_DIR/ironic-test-deploy/scripts
     ./create-ironic-node.sh
 
-## Setup virtual bmc:
+## Setup virtual bmc
 
 To complete the illusion that this is a physical guest a virtual BMC server is
 installed to control the guest.
@@ -150,14 +150,14 @@ between the baremetal server and Ironic so wipe them:
 
     sudo iptables -F FORWARD
 
-## Create barmetal server:
+## Create baremetal server
 
 Create a baremetal node that will map to the physical server.
 
     cd $SCRIPT_DIR/ironic-test-deploy/scripts
     ./create-baremetal-node.sh
 
-## Create barmetal server:
+## Create port mapping to baremetal server port
 
 Create a port for the baremetal machine, the virtual port MAC address matches
 that of the 'physical' server.
@@ -165,7 +165,7 @@ that of the 'physical' server.
     cd $SCRIPT_DIR/ironic-test-deploy/scripts
     ./create-baremetal-port.sh
 
-## Prepare server:
+## Prepare server
 
 Make 'physical' server available.
 
@@ -193,7 +193,7 @@ the `reset-clean-wait-node.sh` can be used to reset the server.
     | a2e7e048-b564-46e8-a695-c9298230b581 | ironic-node01 | None          | power off   | available          | False       |
     +--------------------------------------+---------------+---------------+-------------+--------------------+-------------+
 
-## Deploy Server:
+## Deploy Server
 
 Finally deploy the server:
 
