@@ -1,22 +1,10 @@
 variables:
   openstack-origin: &openstack-origin distro
-  data-port: &data-port br-ex:ens4 br-deployment:ens5
   worker-multiplier: &worker-multiplier 0.25
   osd-devices: &osd-devices /dev/sdb /dev/vdb
   expected-osd-count: &expected-osd-count 3
   expected-mon-count: &expected-mon-count 3
-  oam-space: &oam-space main
-  data-space: &data-space data
-  
-machines:
-  "1":
-    series: focal
-  "2":
-    series: focal
-  "3":
-    series: focal
-  "4":
-    series: focal
+
 relations:
 - - nova-ironic
   - ironic-api
@@ -129,14 +117,10 @@ applications:
       gui-y: '0'
     charm: cs:cinder
     num_units: 1
-    bindings:
-      "": *oam-space
     options:
       glance-api-version: 2
       openstack-origin: *openstack-origin
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:2"
   cinder-ceph:
     annotations:
       gui-x: '1120'
@@ -149,14 +133,10 @@ applications:
       gui-y: '250'
     charm: cs:ceph-radosgw
     num_units: 1
-    bindings:
-      "": *oam-space
     options:
       source: *openstack-origin
       namespace-tenants: True
     series: focal
-    to:
-      - "lxd:3"
   ceph-mon:
     annotations:
       gui-x: '750'
@@ -168,10 +148,6 @@ applications:
       monitor-count: *expected-mon-count
       source: *openstack-origin
     series: focal
-    to:
-      - "lxd:2"
-      - "lxd:3"
-      - "lxd:4"
   ceph-osd:
     annotations:
       gui-x: '1000'
@@ -179,13 +155,10 @@ applications:
     charm: cs:ceph-osd
     num_units: 3
     options:
-      osd-devices: *osd-devices
       source: *openstack-origin
+    storage:
+      osd-devices: cinder,10G,2
     series: focal
-    to:
-      - "2"
-      - "3"
-      - "4"
   glance:
     annotations:
       gui-x: '250'
@@ -193,13 +166,9 @@ applications:
     charm: cs:glance
     series: focal
     num_units: 1
-    bindings:
-      "": *oam-space
     options:
       openstack-origin: *openstack-origin
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:4"
   keystone:
     annotations:
       gui-x: '500'
@@ -207,13 +176,9 @@ applications:
     charm: cs:keystone
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
     options:
       openstack-origin: *openstack-origin
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:2"
   mysql:
     annotations:
       gui-x: '0'
@@ -221,14 +186,10 @@ applications:
     charm: cs:percona-cluster
     series: bionic
     num_units: 1
-    bindings:
-      "": *oam-space
     options:
       innodb-buffer-pool-size: 256M
       max-connections: 1000
       performance-schema: true
-    to:
-      - "lxd:3"
   neutron-api:
     annotations:
       gui-x: '500'
@@ -236,16 +197,12 @@ applications:
     charm: cs:neutron-api
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
     options:
       flat-network-providers: "physnet1 physnet2"
       neutron-security-groups: true
       openstack-origin: *openstack-origin
       manage-neutron-plugin-legacy-mode: false
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:4"
   neutron-gateway:
     annotations:
       gui-x: '0'
@@ -254,18 +211,13 @@ applications:
     comment: SET data-port to match your environment
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
-    #  data: *data-space
     options:
       bridge-mappings: physnet1:br-ex physnet2:br-deployment
-      data-port: *data-port
+      data-port: ""
       openstack-origin: *openstack-origin
       enable-isolated-metadata: true
       enable-metadata-network: true
       worker-multiplier: *worker-multiplier
-    to:
-      - 1
   nova-cloud-controller:
     annotations:
       gui-x: '0'
@@ -273,27 +225,20 @@ applications:
     charm: cs:~openstack-charmers-next/nova-cloud-controller
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
     options:
       network-manager: Neutron
       openstack-origin: *openstack-origin
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:2"
   nova-ironic:
     charm: cs:~openstack-charmers-next/nova-compute
     series: focal
     num_units: 1
-    bindings:
-      "": *oam-space
     options:
       enable-live-migration: false
       enable-resize: false
       openstack-origin: *openstack-origin
       virt-type: ironic
-    to:
-      - "lxd:3"
+      debug: True
   ntp:
     annotations:
       gui-x: '1000'
@@ -308,12 +253,8 @@ applications:
     charm: cs:openstack-dashboard
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
     options:
       openstack-origin: *openstack-origin
-    to:
-      - "lxd:4"
   placement:
     annotations:
       gui-x: '0'
@@ -321,13 +262,9 @@ applications:
     charm: cs:placement
     num_units: 1
     series: focal
-    bindings:
-      "": *oam-space
     options:
       openstack-origin: *openstack-origin
       worker-multiplier: *worker-multiplier
-    to:
-      - "lxd:2"
   rabbitmq-server:
     annotations:
       gui-x: '500'
@@ -335,20 +272,13 @@ applications:
     charm: cs:rabbitmq-server
     series: focal
     num_units: 1
-    bindings:
-      "": *oam-space
-    to:
-      - "lxd:3"
   ironic-api:
     charm: cs:~openstack-charmers-next/ironic-api
     num_units: 1
     series: focal
     options:
       openstack-origin: *openstack-origin
-    bindings:
-      "": *oam-space
-    to:
-      - "lxd:4"
+      debug: True
   ironic-conductor:
     charm: cs:~openstack-charmers-next/ironic-conductor
     num_units: 1
@@ -359,17 +289,14 @@ applications:
       disable-secure-erase: true
       use-ipxe: true
       enabled-network-interfaces: "flat, noop"
-    bindings:
-      "": *oam-space
-    to:
-      - "lxd:2"
+      debug: True
   neutron-openvswitch:
     charm: cs:neutron-openvswitch
     num_units: 0
     series: focal
     options:
       bridge-mappings: physnet1:br-ex physnet2:br-deployment
-      data-port: *data-port
+      data-port: ""
   neutron-ironic-agent:
     charm: cs:~openstack-charmers-next/neutron-api-plugin-ironic
     num_units: 0
